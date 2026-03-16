@@ -2,18 +2,18 @@ services:
   reverse-proxy:
     build: ReverseProxy
     expose:
-      - 80
+      - "80"
     depends_on:
     - front-end
     - core
     - map
     ports:
-      - "7000:80"
+      - "80:80"
 
   front-end:
     build: ../FrontendMicroservice/front-end
-    ports:
-      - "8000:80"
+    expose:
+    - "8000"
   
   core:
     build: ../CoreMicroservice/
@@ -37,13 +37,16 @@ services:
   email:
     build: ../EmailMicroservice
     expose:
-     - "8080"
+     - "8081"
     env_file: ".env"
 
   mailhog:
     image: mailhog/mailhog
+    expose:
+     - "8025"
+     - "1025"
     ports:
-      - "1025:1025"
+      - "8025:8025"
 
   map:
     build: ../MapMicroservice/map-service
