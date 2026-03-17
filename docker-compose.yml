@@ -11,34 +11,34 @@ services:
       - "80:80"
 
   front-end:
-    build: ../FrontendMicroservice/front-end
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/frontend-service:latest
     expose:
     - "8000"
   
   core:
-    build: ../CoreMicroservice/
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service:latest
     expose:
      - "8000"
     depends_on:
       - db
-    env_file: ".env"
+    env_file: "core.env"
 
-  scheduler:
-    build: ../CoreMicroservice/scheduler
+  # scheduler:
+  #   build: ../CoreMicroservice/scheduler
      
   voting:
-    build: ../VotingMicroservice
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/voting-service:latest
     expose:
      - "8085"
-    env_file: ".env"
+    env_file: "voting.env"
     depends_on:
       - db
 
   email:
-    build: ../EmailMicroservice
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/email-service:latest
     expose:
      - "8081"
-    env_file: ".env"
+    env_file: "email.env"
 
   mailhog:
     image: mailhog/mailhog
@@ -49,8 +49,8 @@ services:
       - "8025:8025"
 
   map:
-    build: ../MapMicroservice/map-service
-    env_file: ".env"
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/map-service:working
+    env_file: "map.env"
     expose:
      - "8080"
     depends_on:
@@ -69,11 +69,11 @@ services:
       - core_data:/var/lib/postgresql
 
   migration-core:
-    build: ../CoreMicroservice/
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service:latest
     command: ["python3", "manage.py", "migrate"]
     depends_on:
       - db
-    env_file: ".env"
+    env_file: "core.env"
     
 volumes:
   core_data:
