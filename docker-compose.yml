@@ -1,0 +1,76 @@
+services:
+  reverse-proxy:
+    build: ReverseProxy
+    expose:
+      - "80"
+    depends_on:
+    - front-end
+    - core
+    - map
+    ports:
+      - "80:80"
+
+  front-end:
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/frontend-service:latest
+    expose:
+    - "8000"
+  
+  core:
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service:latest
+    expose:
+     - "8000"
+    depends_on:
+      - db
+    env_file: "core.env"
+
+  # scheduler:
+  #   build: ../CoreMicroservice/scheduler
+     
+  voting:
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/voting-service:latest
+    expose:
+     - "8085"
+    env_file: "voting.env"
+    depends_on:
+      - db
+
+  email:
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/email-service:latest
+    expose:
+     - "8081"
+    env_file: "email.env"
+
+  mailhog:
+    image: mailhog/mailhog
+    expose:
+     - "8025"
+     - "1025"
+    ports:
+      - "8025:8025"
+
+  map:
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/map-service:working
+    env_file: "map.env"
+    expose:
+     - "8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgis/postgis:18-3.6-alpine
+    container_name: db
+    expose:
+      - "5432"
+    env_file: "db.env"
+    volumes:
+      - core_data:/var/lib/postgresql
+
+  migration-core:
+    image: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service:latest
+    command: ["python3", "manage.py", "migrate"]
+    depends_on:
+      - db
+    env_file: "core.env"
+    
+volumes:
+  core_data:
